@@ -5,6 +5,8 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use App\Models\Role as RoleModel;
+use Illuminate\Support\Facades\Auth;
 
 class Role
 {
@@ -13,11 +15,19 @@ class Role
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next,$role): Response
+    public function handle(Request $request, Closure $next,$id): Response
     {
-        if($request->user()->role !==$role){
-            return redirect('dashboard');
+        
+        $guards = empty($guards) ? [null] : $guards;
+
+        // dd(Auth::user());
+        if($id != Auth::user()->role_id){
+            return redirect()->route('login')->with('error', 'You do not have access to this page');
         }
         return $next($request);
+        
+        // return response()->json([
+        //     'message' => 'Unauthorized'
+        // ], 403);
     }
 }
